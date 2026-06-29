@@ -1,0 +1,91 @@
+<div class="form-container">
+  <div class="form-card">
+    <div class="form-header">
+      <h2>{{ isEditMode ? 'Update Profile' : 'Register New Employee' }}</h2>
+      <p class="subtitle">Fill out the information below to manage employee details.</p>
+    </div>
+
+    <div *ngIf="errorMessage" class="error-banner">
+      {{ errorMessage }}
+    </div>
+
+    <form [formGroup]="employeeForm" (ngSubmit)="$event.preventDefault(); onSubmit()" novalidate>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="first_name">First Name</label>
+          <input 
+            type="text" 
+            id="first_name" 
+            formControlName="first_name"
+            [class.input-error]="(employeeForm.get('first_name')?.touched && employeeForm.get('first_name')?.invalid) || backendErrors['first_name']"
+          />
+          <span class="error-msg" *ngIf="employeeForm.get('first_name')?.touched && employeeForm.get('first_name')?.hasError('required')">First name is required.</span>
+          <span class="error-msg" *ngIf="backendErrors['first_name']">{{ backendErrors['first_name'] }}</span>
+        </div>
+
+        <div class="form-group">
+          <label for="last_name">Last Name</label>
+          <input 
+            type="text" 
+            id="last_name" 
+            formControlName="last_name"
+            [class.input-error]="(employeeForm.get('last_name')?.touched && employeeForm.get('last_name')?.invalid) || backendErrors['last_name']"
+          />
+          <span class="error-msg" *ngIf="employeeForm.get('last_name')?.touched && employeeForm.get('last_name')?.hasError('required')">Last name is required.</span>
+          <span class="error-msg" *ngIf="backendErrors['last_name']">{{ backendErrors['last_name'] }}</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input 
+          type="email" 
+          id="email" 
+          formControlName="email"
+          [class.input-error]="(employeeForm.get('email')?.touched && employeeForm.get('email')?.invalid) || backendErrors['email']"
+        />
+        <span class="error-msg" *ngIf="employeeForm.get('email')?.touched && employeeForm.get('email')?.hasError('required')">Email is required.</span>
+        <span class="error-msg" *ngIf="employeeForm.get('email')?.touched && employeeForm.get('email')?.hasError('email')">Please enter a valid email address.</span>
+        <span class="error-msg" *ngIf="backendErrors['email']"><strong>Backend Error:</strong> {{ backendErrors['email'] }}</span>
+      </div>
+
+      <div class="form-group" *ngIf="!isEditMode">
+        <label for="password">Temporary Account Password</label>
+        <input 
+          type="password" 
+          id="password" 
+          formControlName="password"
+          placeholder="Minimum 8 characters"
+          [class.input-error]="(employeeForm.get('password')?.touched && employeeForm.get('password')?.invalid) || backendErrors['password']"
+        />
+        <span class="error-msg" *ngIf="employeeForm.get('password')?.touched && employeeForm.get('password')?.hasError('required')">A secure temporary password is required.</span>
+        <span class="error-msg" *ngIf="employeeForm.get('password')?.touched && employeeForm.get('password')?.hasError('minlength')">Password must be at least 8 characters long.</span>
+        <span class="error-msg" *ngIf="backendErrors['password']">{{ backendErrors['password'] }}</span>
+        </div>
+
+      <div class="form-group mb-4">
+        <label for="role">Assign Security Role</label>
+        <select 
+          id="role" 
+          formControlName="role"
+          style="padding: 0.65rem 0.75rem; border: 1px solid #dcdde1; border-radius: 4px; font-size: 1rem;"
+          [class.input-error]="employeeForm.get('role')?.touched && employeeForm.get('role')?.invalid"
+        >
+          <option value="employee">Employee</option>
+          <option value="admin">Admin</option>
+          </select>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" [routerLink]="['/employees']" [disabled]="isSubmitting">
+          Cancel
+        </button>
+        <button type="submit" class="btn-primary" [disabled]="employeeForm.invalid || isSubmitting">
+          {{ isSubmitting ? 'Saving...' : (isEditMode ? 'Save Changes' : 'Add Employee') }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

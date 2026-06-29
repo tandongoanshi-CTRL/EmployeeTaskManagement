@@ -1,0 +1,83 @@
+<div class="auth-wrapper">
+  <div class="register-box">
+    <h2>Create an Account</h2>
+    <p class="subtitle">Join the task management system</p>
+
+    <div *ngIf="successMessage" class="success-banner">
+      {{ successMessage }}
+    </div>
+
+    <div *ngIf="errorMessage" class="error-banner">
+      {{ errorMessage }}
+    </div>
+
+    <form (ngSubmit)="onRegister()">
+      
+      <div class="input-row">
+        <div class="input-group">
+          <label for="first_name">First Name</label>
+          <input 
+            type="text" 
+            id="first_name" 
+            name="first_name" 
+            [(ngModel)]="user.first_name" 
+            placeholder="John"
+          />
+        </div>
+
+        <div class="input-group">
+          <label for="last_name">Last Name</label>
+          <input 
+            type="text" 
+            id="last_name" 
+            name="last_name" 
+            [(ngModel)]="user.last_name" 
+            placeholder="Doe"
+          />
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="username">Username</label>
+        <input 
+          type="text" 
+          id="username" 
+          name="username" 
+          [(ngModel)]="user.username" 
+          placeholder="Choose a username" 
+          required
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="email">Email Address</label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email" 
+          [(ngModel)]="user.email" 
+          placeholder="name@company.com" 
+          required
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password" 
+          [(ngModel)]="user.password" 
+          placeholder="Min. 8 chars, 1 uppercase, 1 digit" 
+          required
+        />
+      </div>
+
+      <button type="submit" class="btn-register">Register</button>
+    </form>
+
+    <div class="footer-link">
+      Already have an account? <a routerLink="/login">Sign In</a>
+    </div>
+  </div>
+</div>

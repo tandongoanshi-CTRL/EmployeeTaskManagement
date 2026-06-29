@@ -1,0 +1,21 @@
+<div class="app-container">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h3>HR Management</h3>
+    </div>
+    
+    <nav class="sidebar-menu">
+      <a routerLink="/dashboard" routerLinkActive="active" class="menu-item">
+        <span class="icon">📊</span> Dashboard
+      </a>
+
+      <a routerLink="/employees" routerLinkActive="active" class="menu-item">
+        <span class="icon">👥</span> Employees
+      </a>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

@@ -1,0 +1,54 @@
+<div class="container mt-4" style="padding: 2rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+    <h2 class="mb-0" style="color: #2c3e50; font-weight: bold;">Employee Directory</h2>
+    
+    <button *ngIf="isAdmin" [routerLink]="['/employees/new']" style="background-color: #3498db; color: white; padding: 0.6rem 1.2rem; border: none; border-radius: 4px; font-weight: 500; cursor: pointer;">
+      + Add Employee
+    </button>
+  </div>
+
+  <div *ngIf="errorMessage" style="background-color: #fab1a0; color: #c0392b; padding: 0.8rem; margin-bottom: 1rem; border-radius: 4px; font-weight: 500;">
+    {{ errorMessage }}
+  </div>
+  
+  <table style="width: 100%; border-collapse: collapse; text-align: left; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-radius: 8px; overflow: hidden;">
+    <thead>
+      <tr style="background-color: #5e50e6; color: white;">
+        <th style="padding: 1rem;">ID</th>
+        <th style="padding: 1rem;">Name</th>
+        <th style="padding: 1rem;">Email</th>
+        <th style="padding: 1rem;">Role</th>
+        <th style="padding: 1rem;">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let employee of employees" style="border-bottom: 1px solid #f1f2f6;">
+        <td style="padding: 1rem;">{{ employee.id }}</td>
+        
+        <td style="padding: 1rem;">
+          {{ (employee.first_name || employee.last_name) ? (employee.first_name + ' ' + employee.last_name) : employee.username }}
+        </td>
+        <td style="padding: 1rem;">{{ employee.email }}</td>
+        <td style="padding: 1rem;"><span style="text-transform: capitalize; background-color: #f5f6fa; padding: 0.2rem 0.5rem; border-radius: 4px;">{{ employee.role }}</span></td>
+        <td style="padding: 1rem;">
+          
+          <button *ngIf="isAdmin" [routerLink]="['/employees/edit', employee.id]" style="background-color: #f1f2f6; color: #2980b9; padding: 0.4rem 0.8rem; border: 1px solid #dcdde1; border-radius: 4px; cursor: pointer; font-weight: 500; margin-right: 0.5rem;">
+            Edit
+          </button>
+          
+          <button [routerLink]="['/employees', employee.id]" style="background-color: #f1f2f6; color: #2c3e50; padding: 0.4rem 0.8rem; border: 1px solid #dcdde1; border-radius: 4px; cursor: pointer; margin-right: 0.5rem;">
+            View
+          </button>
+          
+          <button *ngIf="isAdmin" (click)="deleteEmployee(employee.id)" style="background-color: #fff5f5; color: #e74c3c; padding: 0.4rem 0.8rem; border: 1px solid #fab1a0; border-radius: 4px; cursor: pointer; font-weight: 500;">
+            Delete
+          </button>
+          
+        </td>
+      </tr>
+      <tr *ngIf="employees.length === 0">
+        <td colspan="5" style="padding: 2rem; text-align: center; color: #7f8c8d;">No employee profiles found.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

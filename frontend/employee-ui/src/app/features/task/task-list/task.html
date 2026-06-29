@@ -1,0 +1,225 @@
+<div class="directory-container">
+  
+  <div class="directory-header">
+    <h1>Task Directory</h1>
+    <button *ngIf="isSuperUser" class="btn-primary" (click)="toggleCreateForm()">
+      {{ showForm && !isEditing ? '✕ Close Form' : '+ Add Task' }}
+    </button>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-banner">
+    {{ errorMessage }}
+  </div>
+
+  <div class="filter-bar-container" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end; border: 1px solid #e3e6f0;">
+    <div class="filter-group" style="flex: 1; min-width: 200px;">
+      <label style="font-weight: 600; font-size: 13px; color: #4e73df; display: block; margin-bottom: 5px;">Search Text</label>
+      <input type="text" [(ngModel)]="searchText" (input)="getTasks()" placeholder="Search title or description..." style="width: 100%; padding: 8px; border: 1px solid #d1d3e2; border-radius: 4px;">
+    </div>
+    <div class="filter-group" style="width: 150px;">
+      <label style="font-weight: 600; font-size: 13px; color: #4e73df; display: block; margin-bottom: 5px;">Filter Status</label>
+      <select [(ngModel)]="filterStatus" (change)="getTasks()" style="width: 100%; padding: 8px; border: 1px solid #d1d3e2; border-radius: 4px; background: white;">
+        <option value="">All Statuses</option>
+        <option value="pending">Pending</option>
+        <option value="in_progress">In Progress</option>
+        <option value="completed">Completed</option>
+      </select>
+    </div>
+    <div class="filter-group" style="width: 130px;">
+      <label style="font-weight: 600; font-size: 13px; color: #4e73df; display: block; margin-bottom: 5px;">Assignee User ID</label>
+      <input type="number" [(ngModel)]="filterAssignedTo" (input)="getTasks()" placeholder="e.g. 2" style="width: 100%; padding: 8px; border: 1px solid #d1d3e2; border-radius: 4px;">
+    </div>
+  </div>
+
+  <div *ngIf="showForm && isSuperUser" class="form-card animate-fade">
+    <h3>{{ isEditing ? 'Update Project Task Specs' : 'Assign New Project Task' }}</h3>
+    <form (ngSubmit)="saveTask()">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Task Title *</label>
+          <input type="text" [(ngModel)]="title" name="title" required placeholder="What needs to be done?">
+        </div>
+        <div class="form-group">
+          <label>Assignee User ID</label>
+          <input type="number" [(ngModel)]="assignedTo" name="assignedTo" placeholder="e.g. 4">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Operational Progress Status</label>
+          <select [(ngModel)]="taskStatus" name="taskStatus" class="form-control">
+            <option value="pending">Pending</option>
+            <option value="in_progress">In Progress</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Task Description & Specifications</label>
+        <textarea [(ngModel)]="description" name="description" rows="3" placeholder="Provide context, links, or expectations..."></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn-action" style="background: #6c757d; color: white; margin-right: 10px;" (click)="cancelForm()">Cancel</button>
+        <button type="submit" class="btn-submit">{{ isEditing ? 'Save Changes' : 'Create Task' }}</button>
+      </div>
+    </form>
+  </div>
+
+  <div *ngIf="showEmployeeStatusForm && !isSuperUser" class="form-card animate-fade">
+    <h3>Update Task Progress State</h3>
+    <p><strong>Task:</strong> {{ title }}</p>
+    <form (ngSubmit)="submitEmployeeStatusUpdate()">
+      <div class="form-group">
+        <label>Select Status</label>
+        <select [(ngModel)]="taskStatus" name="taskStatus" class="form-control">
+          <option value="pending">Pending</option>
+          <option value="in_progress">In Progress</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn-action" style="background: #6c757d; color: white; margin-right: 10px;" (click)="cancelForm()">Cancel</button>
+        <button type="submit" class="btn-submit">Update Progress</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="table-wrapper">
+    <table class="directory-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Task Title</th>
+          <th>Assigned Employee</th>
+          <th>System Role</th>
+          <th>Operational Status</th>
+          <th class="text-center">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let task of tasks">
+          <td><strong>{{ task.id }}</strong></td>
+          <td>{{ task.title }}</td>
+          <td>
+            <span *ngIf="task.assigned_to_username; else rawIdOnly">
+                User ID: {{ task.assigned_to }} ({{ task.assigned_to_username }})
+            </span>
+            <ng-template #rawIdOnly>
+                <span *ngIf="task.assigned_to; else unassignedText">
+                    User ID: {{ task.assigned_to }}
+                </span>
+            </ng-template>
+            <ng-template #unassignedText>
+                <em style="color: #999;">Unassigned Pool</em>
+            </ng-template>
+          </td>
+          <td>
+            <span class="role-badge" [ngStyle]="{'background-color': task.assigned_to_username ? '#f5f5f5' : '#e3f2fd', 'color': '#333'}">
+                {{ (task.assigned_to ? 'EMPLOYEE' : 'POOL') }}
+            </span>
+          </td>
+          <td>
+            <span class="status-indicator" [attr.data-status]="task.status">
+              {{ task.status || 'pending' }}
+            </span>
+          </td>
+          <td>
+            <div class="action-buttons" style="justify-content: center;">
+              <button *ngIf="isSuperUser" class="btn-action btn-edit" style="background: #e8f0fe; color: #1a73e8; border: 1px solid #1a73e8; margin-right: 4px;" (click)="startEditTask(task)">Edit</button>
+              
+              <button *ngIf="!isSuperUser" class="btn-action btn-edit" style="background: #e8f0fe; color: #1a73e8; border: 1px solid #1a73e8; margin-right: 4px;" (click)="startEmployeeStatusEdit(task)">Status</button>
+              
+              <button class="btn-action btn-view" (click)="viewDetails(task)">View</button>
+              
+              <button *ngIf="isSuperUser" class="btn-action btn-delete" (click)="deleteTask(task.id, $event)">Delete</button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="tasks.length === 0">
+          <td colspan="6" class="empty-row-state">No current operations indexed to tracking dashboard.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="selectedTask" class="modal-overlay" (click)="closeDetails()">
+    <div class="modal-card" style="max-width: 650px; width: 90%; max-height: 85vh; overflow-y: auto;" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Task Blueprint File</h2>
+        <button class="close-modal-btn" (click)="closeDetails()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="detail-item">
+          <label>Database Record ID:</label>
+          <p>{{ selectedTask.id }}</p>
+        </div>
+        <div class="detail-item">
+          <label>Task Designation Name:</label>
+          <p class="highlight-text">{{ selectedTask.title }}</p>
+        </div>
+        <div class="detail-item">
+          <label>Current Progress Status State:</label>
+          <p><span class="status-indicator" [attr.data-status]="selectedTask.status">{{ selectedTask.status }}</span></p>
+        </div>
+        <div class="detail-item">
+          <label>Assigned Staff Member Profile:</label>
+          <p *ngIf="selectedTask.assigned_to_username; else detailedUnassigned">
+            User ID: {{ selectedTask.assigned_to }} (<strong>{{ selectedTask.assigned_to_username }}</strong>)
+          </p>
+          <ng-template #detailedUnassigned><p>Unassigned Global Operations Pool</p></ng-template>
+        </div>
+        <div class="detail-item">
+          <label>Core Detailed Description & Requirements:</label>
+          <div class="desc-box" style="background: #fdfdfd; padding: 12px; border-left: 4px solid #4e73df; font-size: 14px; margin-bottom: 20px;">
+            {{ selectedTask.description || 'No extensive specifications attached to this file.' }}
+          </div>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #eaecf1; margin: 25px 0;">
+
+        <div class="attachments-section" style="margin-bottom: 25px;">
+          <h4 style="color: #333; margin-bottom: 10px; font-size: 16px;">Platform File Attachments</h4>
+          
+          <div *ngIf="selectedTask.attachments && selectedTask.attachments.length > 0" style="margin-bottom: 15px;">
+            <ul style="list-style: none; padding: 0; margin: 0;">
+              <li *ngFor="let file of selectedTask.attachments" style="padding: 8px 12px; background: #f8f9fa; border: 1px solid #e3e6f0; border-radius: 4px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
+                <span>📎 <strong>{{ file.file_name }}</strong> <small style="color: #858796;">(by {{ file.uploaded_by_username }})</small></span>
+                <a [href]="file.file" target="_blank" style="color: #4e73df; text-decoration: none; font-weight: 600;">Download ↗</a>
+              </li>
+            </ul>
+          </div>
+          <p *ngIf="!selectedTask.attachments || selectedTask.attachments.length === 0" style="color: #858796; font-size: 13px; font-style: italic; margin-bottom: 15px;">No files uploaded for this task workspace yet.</p>
+
+          <div class="upload-container" style="display: flex; gap: 10px; align-items: center;">
+            <input type="file" (change)="onFileSelected($event)" style="font-size: 13px;">
+            <button type="button" [disabled]="!selectedFile" (click)="submitAttachment()" style="background: #1cc88a; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 13px; cursor: pointer;">Upload</button>
+          </div>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #eaecf1; margin: 25px 0;">
+
+        <div class="comments-section">
+          <h4 style="color: #333; margin-bottom: 10px; font-size: 16px;">Discussion Hub & Activity Feed</h4>
+          
+          <div class="comments-feed" style="max-height: 200px; overflow-y: auto; background: #fdfdfd; border: 1px solid #eaecf1; padding: 10px; border-radius: 6px; margin-bottom: 15px;">
+            <div *ngFor="let comment of selectedTask.comments" style="padding: 8px; border-bottom: 1px dashed #e3e6f0; font-size: 13px;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <span style="font-weight: bold; color: #4e73df;">@{{ comment.author_username }}</span>
+                <small style="color: #b7b9cc;">{{ comment.created_at | date:'short' }}</small>
+              </div>
+              <p style="margin: 0; color: #5a5c69;">{{ comment.content }}</p>
+            </div>
+            <p *ngIf="!selectedTask.comments || selectedTask.comments.length === 0" style="color: #858796; font-size: 13px; font-style: italic; text-align: center; padding: 20px 0;">Be the first to leave a remark or operation status logging notes!</p>
+          </div>
+
+          <div class="comment-input-box" style="display: flex; gap: 8px;">
+            <input type="text" [(ngModel)]="newCommentContent" placeholder="Write a status update comment..." style="flex: 1; padding: 8px; border: 1px solid #d1d3e2; border-radius: 4px; font-size: 13px;">
+            <button type="button" [disabled]="!newCommentContent.trim()" (click)="submitComment()" style="background: #4e73df; color: white; border: none; padding: 8px 16px; border-radius: 4px; font-size: 13px; cursor: pointer;">Send</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>

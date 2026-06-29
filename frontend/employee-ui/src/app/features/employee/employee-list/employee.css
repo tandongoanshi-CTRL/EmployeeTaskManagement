@@ -1,0 +1,64 @@
+.list-container {
+  padding: 24px;
+  display: block !important; /* Prevents container from collapsing */
+  background-color: #ffffff;
+}
+
+h2 {
+  color: #1f2937;
+  margin-bottom: 20px;
+  font-family: sans-serif;
+}
+
+.employee-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  display: table !important; /* Ensures it renders as a table layout */
+}
+
+.employee-table th, .employee-table td {
+  padding: 14px 18px;
+  text-align: left;
+  font-family: sans-serif;
+  color: #374151 !important; /* Force text color to be dark gray/visible */
+}
+
+.employee-table th {
+  background-color: #4f46e5;
+  color: white !important;
+  font-weight: 600;
+}
+
+.employee-table tbody tr {
+  display: table-row !important;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.employee-table tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+/* Role Badge Styles */
+.role-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.role-badge.admin { background-color: #fee2e2; color: #dc2626; }
+.role-badge.manager { background-color: #fef3c7; color: #d97706; }
+.role-badge.employee { background-color: #dcfce7; color: #16a34a; }
+
+.btn-detail {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  cursor: pointer;
+  border-radius: 6px;
+  font-size: 14px;
+}

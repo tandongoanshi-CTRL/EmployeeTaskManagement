@@ -1,0 +1,99 @@
+/* Full screen wrapper to center the container perfectly */
+.auth-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f4f6f9;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Modern white card design container */
+.register-box {
+  background: #ffffff;
+  padding: 2.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 450px;
+}
+
+.register-box h2 {
+  margin-bottom: 0.5rem;
+  color: #333333;
+  font-size: 1.75rem;
+  text-align: center;
+}
+
+.register-box .subtitle {
+  color: #666666;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 0.9rem;
+}
+
+/* Handles layout for first name and last name row side-by-side */
+.input-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.input-row .input-group {
+  flex: 1;
+}
+
+/* Form inputs and label spacing */
+.input-group {
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group label {
+  margin-bottom: 0.5rem;
+  color: #444444;
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+.input-group input {
+  padding: 0.75rem;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+/* Validation status alert banners */
+.error-banner {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+  border-left: 4px solid #dc3545;
+}
+
+.success-banner {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+  border-left: 4px solid #28a745;
+}
+
+/* Primary interactive entry buttons */
+.btn-register {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #28a745;
+  color: #ffffff;
+  border

@@ -1,0 +1,31 @@
+<div class="app-container">
+  <header class="main-header">
+    <div class="header-brand">
+      <span class="brand-icon">⚡</span>
+      <h2>Operation Workspace</h2>
+    </div>
+
+    <nav class="nav-links">
+      <a routerLink="/tasks" routerLinkActive="active-tab" class="nav-item">
+        📋 Tasks Directory
+      </a>
+      <a routerLink="/employees" routerLinkActive="active-tab" class="nav-item">
+        👥 Employees List
+      </a>
+    </nav>
+
+    <div class="user-profile-badge">
+      <div class="profile-meta">
+        <span class="user-name">Goanshi Tandon</span>
+        <span class="user-role-tag">{{ currentRole | uppercase }}</span>
+      </div>
+      <button class="btn-logout" (click)="handleLogout()">
+        Logout 🚪
+      </button>
+    </div>
+  </header>
+
+  <main class="workspace-viewport">
+    <router-outlet></router-outlet>
+  </main>
+</div>

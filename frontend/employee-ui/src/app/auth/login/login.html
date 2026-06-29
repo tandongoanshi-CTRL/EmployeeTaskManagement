@@ -1,0 +1,39 @@
+<div class="auth-wrapper">
+  <div class="login-box">
+    <h2>Welcome Back</h2>
+    <p class="subtitle">Please sign in / login to your dashboard</p>
+
+    <div *ngIf="errorMessage" class="error-banner">
+      {{ errorMessage }}
+    </div>
+
+    <form (ngSubmit)="onLogin()">
+      
+      <div class="input-group">
+        <label for="username">Username</label>
+        <input 
+          type="text" 
+          id="username" 
+          name="username" 
+          [(ngModel)]="credentials.username" 
+          placeholder="Enter your username" 
+          required
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password" 
+          [(ngModel)]="credentials.password" 
+          placeholder="Enter your password" 
+          required
+        />
+      </div>
+
+      <button type="submit" class="btn-login">Sign In</button>
+    </form>
+  </div>
+</div>
