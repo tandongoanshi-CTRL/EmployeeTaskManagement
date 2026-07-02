@@ -5,6 +5,17 @@ Welcome to the repository for the Employee Task Management System. This applicat
 The project is split cleanly into a **Django REST Framework** backend and an **Angular** frontend workspace.
 
 ---
+!!PASSWORDS FOR LOGIN!!
+
+(ADMIN)goanshi = 123456789Goanshi
+employees:
+ashok= As123456789
+raja= 123456789Ra
+gunjan=123456789Gu
+rajni= 123456789Rajni
+indra_jeet=123456789In
+riddhi_singh=123456789Ri
+
 
 ##  Running the Django Backend
 
@@ -47,10 +58,10 @@ python manage.py migrate
 
 5. Start the Development Server
 
-python manage.py runserver
-Admin Dashboard: http://127.0.0.1:8000/admin/
+python manage.py runserver 8001
+Admin Dashboard: http://127.0.0.1:8001/admin/
 
-Swagger API Documentation: http://127.0.0.1:8000/api/swagger/
+Swagger API Documentation: http://127.0.0.1:8001/api/docs/
 
 
 
