@@ -1,18 +1,16 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 
-// ADDED: Modern Functional HTTP Interceptor for standalone configuration applications
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
-  // Grab token dynamically from local storage cache
-  const token = localStorage.getItem('access_token');
+  const token = localStorage.getItem('access_token') || localStorage.getItem('token');
+  const isLoginRequest = req.url.endsWith('/api') || req.url.includes('/login');
 
-  // If token exists, clone request and insert Authorization Header seamlessly
-  if (token) {
-    const clonedRequest = req.clone({
+  if (token && !isLoginRequest) {
+    const authReq = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`
       }
     });
-    return next(clonedRequest);
+    return next(authReq);
   }
 
   return next(req);

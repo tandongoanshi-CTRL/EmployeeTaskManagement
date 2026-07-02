@@ -10,9 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
-import os # ADDED: Required for media storage directory path handling
+import os # Required for media storage directory path handling
 from pathlib import Path
-from datetime import timedelta # ADDED: Needed for setting JWT expiration times
+from datetime import timedelta # Needed for setting JWT expiration times
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,11 +39,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    # Third-Party Dependencies
     'rest_framework',
-    'rest_framework_simplejwt', # ADDED: Registered the Simple JWT token package app
-    'django_filters',           # ADDED: Essential for task status and assignment filters to run
+    'rest_framework_simplejwt', 
+    'django_filters',           
     'corsheaders',
     'drf_spectacular',
+    
+    # Core Application Workspace App
     'taskmanager',
 ]
 
@@ -64,7 +68,6 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'taskmanager', 'templates')],
-        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -127,17 +130,22 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 # =====================================================================
-# ADDED: MEDIA FILES CONFIGURATION FOR THE ATTACHMENT MODULE
+# MEDIA FILES CONFIGURATION FOR THE ATTACHMENT MODULE
 # =====================================================================
-# URL path used to access uploaded files in the browser (e.g. http://localhost:8000/media/...)
 MEDIA_URL = '/media/'
-# Physical directory path on disk where Django will write uploaded files
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # =====================================================================
 
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:4200",
+]
+
 AUTH_USER_MODEL = 'taskmanager.User'
 
+# =====================================================================
+# DJANGO REST FRAMEWORK CORE SETTINGS
+# =====================================================================
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -146,28 +154,39 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
-    # 🌟 SAFE ADDITION: This enables the Swagger schema engine cleanly
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
-# ADDED: Custom options controlling token lifetime intervals
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:4200",
-]
 
-# 🌟 ADD THIS BLOCK AT THE BOTTOM OF YOUR backend/config/settings.py:
-
-# Replace your SPECTACULAR_SETTINGS block with this:
+# =====================================================================
+# AUTOMATED DRF SPECTACULAR SWAGGER SPECIFICATIONS
+# =====================================================================
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Employee Task Management API',
-    'DESCRIPTION': 'System portal API documentation workspace.',
+    'DESCRIPTION': 'Automated API documentation workspace for managing tasks and audit logs.',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
-    # 🌟 THE SOLID FIX: Tell the scanner to ONLY look at public patterns
-    'SCHEMA_PATH_PREFIX': r'/api/(?:register|token|auth)',
+    'SERVERS': [
+        {'url': 'http://127.0.0.1:8001', 'description': 'Active Server (Port 8001)'},
+        {'url': 'http://127.0.0.1:8000', 'description': 'Alternative Server (Port 8000)'},
+    ],
+    'SECURITY': [{
+        'BearerAuth': [],
+    }],
+    'COMPONENT_SPLIT_REQUEST': True,
+    'APPEND_COMPONENTS': {
+        'securitySchemes': {
+            'BearerAuth': {
+                'type': 'apiKey',
+                'in': 'header',
+                'name': 'Authorization',
+                'description': 'Format: Bearer <Your_JWT_Token>'
+            }
+        }
+    }
 }

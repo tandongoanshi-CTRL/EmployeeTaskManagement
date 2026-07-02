@@ -53,7 +53,17 @@ export interface Task {
   providedIn: 'root'
 })
 export class TaskService {
-  private baseApiUrl = 'http://localhost:8000/api';
+  
+  // 🎯 DYNAMIC PORT DETECTION: Detects your current active domain name/IP
+  private getBaseUrl(): string {
+  const hostname = window.location.hostname; // Detects 'localhost' or '127.0.0.1'
+  
+  // 🎯 SMART AUTO-DETECTION
+  // If we are working locally, it dynamically checks what's active or defaults cleanly
+  const backendPort = (window.location.port === '4200') ? '8001' : '8000'; 
+  
+  return `http://${hostname}:${backendPort}/api`;
+}
 
   constructor(private http: HttpClient) {}
 
@@ -86,33 +96,33 @@ export class TaskService {
       if (filters.search) params = params.set('search', filters.search);
     }
 
-    return this.http.get<Task[]>(`${this.baseApiUrl}/tasks/`, {
+    return this.http.get<Task[]>(`${this.getBaseUrl()}/tasks/`, {
       headers: this.getAuthHeaders().headers,
       params: params
     });
   }
 
   getTaskById(id: number): Observable<Task> {
-    return this.http.get<Task>(`${this.baseApiUrl}/tasks/${id}/`, this.getAuthHeaders());
+    return this.http.get<Task>(`${this.getBaseUrl()}/tasks/${id}/`, this.getAuthHeaders());
   }
 
   createTask(taskData: Partial<Task>): Observable<Task> {
-    return this.http.post<Task>(`${this.baseApiUrl}/tasks/`, taskData, this.getAuthHeaders());
+    return this.http.post<Task>(`${this.getBaseUrl()}/tasks/`, taskData, this.getAuthHeaders());
   }
 
   updateTask(id: number, taskData: Partial<Task>): Observable<Task> {
-    return this.http.put<Task>(`${this.baseApiUrl}/tasks/${id}/`, taskData, this.getAuthHeaders());
+    return this.http.put<Task>(`${this.getBaseUrl()}/tasks/${id}/`, taskData, this.getAuthHeaders());
   }
 
   deleteTask(id: number): Observable<any> {
-    return this.http.delete(`${this.baseApiUrl}/tasks/${id}/`, this.getAuthHeaders());
+    return this.http.delete(`${this.getBaseUrl()}/tasks/${id}/`, this.getAuthHeaders());
   }
 
   // =====================================================================
   // COMMENT MODULE SUB-ENDPOINTS
   // =====================================================================
   addComment(commentData: Comment): Observable<Comment> {
-    return this.http.post<Comment>(`${this.baseApiUrl}/comments/`, commentData, this.getAuthHeaders());
+    return this.http.post<Comment>(`${this.getBaseUrl()}/comments/`, commentData, this.getAuthHeaders());
   }
 
   // =====================================================================
@@ -124,6 +134,6 @@ export class TaskService {
     formData.append('file', file);
 
     // Pass 'true' to signal multipart handling and omit manual application/json configurations
-    return this.http.post<TaskAttachment>(`${this.baseApiUrl}/attachments/`, formData, this.getAuthHeaders(true));
+    return this.http.post<TaskAttachment>(`${this.getBaseUrl()}/attachments/`, formData, this.getAuthHeaders(true));
   }
 }

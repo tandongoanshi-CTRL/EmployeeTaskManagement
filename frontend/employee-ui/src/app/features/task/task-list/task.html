@@ -27,7 +27,7 @@
     </div>
     <div class="filter-group" style="width: 130px;">
       <label style="font-weight: 600; font-size: 13px; color: #4e73df; display: block; margin-bottom: 5px;">Assignee User ID</label>
-      <input type="number" [(ngModel)]="filterAssignedTo" (input)="getTasks()" placeholder="e.g. 2" style="width: 100%; padding: 8px; border: 1px solid #d1d3e2; border-radius: 4px;">
+      <input type="number" min="1" [(ngModel)]="filterAssignedTo" (input)="getTasks()" placeholder="e.g. 2" style="width: 100%; padding: 8px; border: 1px solid #d1d3e2; border-radius: 4px;">
     </div>
   </div>
 
@@ -41,7 +41,7 @@
         </div>
         <div class="form-group">
           <label>Assignee User ID</label>
-          <input type="number" [(ngModel)]="assignedTo" name="assignedTo" placeholder="e.g. 4">
+          <input type="number" min="1" [(ngModel)]="assignedTo" name="assignedTo" placeholder="e.g. 4">
         </div>
       </div>
       <div class="form-row">

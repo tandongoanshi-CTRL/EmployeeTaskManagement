@@ -2,19 +2,19 @@ from rest_framework import generics, status, viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny 
 from rest_framework.exceptions import PermissionDenied 
-from rest_framework.parsers import MultiPartParser, FormParser # ADDED: For file upload handling
+from rest_framework.parsers import MultiPartParser, FormParser 
 from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend # ADDED: For search & filtering
-from rest_framework import filters # ADDED: For text search querying
+from django_filters.rest_framework import DjangoFilterBackend 
+from rest_framework import filters 
 
 from .models import User, Task, Comment, TaskAttachment, AuditLog 
 from .serializers import (
     RegisterSerializer,
     UserSerializer,
     TaskSerializer,
-    CommentSerializer,        # ADDED
-    TaskAttachmentSerializer,  # ADDED
-    AuditLogSerializer         # ADDED
+    CommentSerializer,      
+    TaskAttachmentSerializer,  
+    AuditLogSerializer         
 )
 
 
@@ -43,12 +43,9 @@ class ProfileView(generics.RetrieveAPIView):
 
     def get_object(self):
         user = self.request.user
-        
-        # 🌟 SWAGGER GUARD: Prevent crash if scanner calls this view anonymously
         if not user or user.is_anonymous:
             return None
             
-        # MODIFIED: Force profile role serialization override if they are a superuser
         if user.is_superuser:
             user.role = 'admin'
         return user
@@ -60,7 +57,6 @@ class EmployeeListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated] 
 
     def get_serializer_class(self):
-        # 🌟 SWAGGER GUARD: Secure check for background request mapping
         if self.request and self.request.method == 'POST':
             return RegisterSerializer
         return UserSerializer
@@ -84,7 +80,7 @@ class EmployeeDetailView(generics.RetrieveUpdateDestroyAPIView):
 class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all().order_by('-created_at')
     serializer_class = TaskSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated] # 🔒 Restored Security
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['status', 'assigned_to'] 
@@ -119,19 +115,15 @@ class TaskViewSet(viewsets.ModelViewSet):
         user = self.request.user
         user_role = self._get_user_role(user)
         
-        # 1. Check basic permissions
         if user_role not in ['admin', 'manager']:
             raise PermissionDenied("You do not have permission to create or assign tasks.")
         
-        # 2. Grab the assigned user object
         assigned_user = serializer.validated_data.get('assigned_to')
-        
-        # 🔑 FIX: If no user ID was provided, automatically set it to the creator
         if not assigned_user:
             serializer.validated_data['assigned_to'] = user
 
-        # 🚀 SAVES THE TASK DIRECTLY (Bypassing admin blocks & audit logs)
         serializer.save(created_by=user)
+
     def perform_update(self, serializer):
         user = self.request.user
         user_role = self._get_user_role(user)
@@ -151,14 +143,11 @@ class TaskViewSet(viewsets.ModelViewSet):
             
         instance.delete()
 
-# =====================================================================
-# NEWLY ADDED VIEWSETS TO MAP ENDPOINTS FOR SUB-FEATURES
-# =====================================================================
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all().order_by('created_at')
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated] # 🔒 Restored Security
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -167,7 +156,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 class TaskAttachmentViewSet(viewsets.ModelViewSet):
     queryset = TaskAttachment.objects.all().order_by('-uploaded_at')
     serializer_class = TaskAttachmentSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated] # 🔒 Restored Security
     parser_classes = [MultiPartParser, FormParser] 
 
     def perform_create(self, serializer):
@@ -183,7 +172,7 @@ class TaskAttachmentViewSet(viewsets.ModelViewSet):
 class AuditLogViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = AuditLog.objects.all().order_by('-timestamp')
     serializer_class = AuditLogSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated] # 🔒 Restored Security
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['task']
 
